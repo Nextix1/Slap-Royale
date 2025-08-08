@@ -130,13 +130,13 @@ local Player = GUI:Tab{
 	Icon = "rbxassetid://7743875962"
 }
 
-User = game.Players.LocalPlayer
+local User = game.Players.LocalPlayer
 
 Combat:Slider{
 	Name = "Slap Aura",
-	Default = 0,
-	Min = 0,
-	Max = 20,
+	Default = 8,
+	Min = 8,
+	Max = 8,
 	Description = "Slaps every player near you. This is experimental, it may kick you.",
 	Callback = function(Value) 
 		getgenv().Range = Value
@@ -188,7 +188,7 @@ end
 
 Combat:Toggle{
 	Name = "Stat ESP",
-	StartingState = false,
+	StartingState = true,
 	Description = "Shows the glove players are using, and their power above their heads.",
 	Callback = function(Value) 
 		getgenv().statESP = Value
@@ -227,7 +227,7 @@ Combat:Toggle{
 
 Protection:Toggle{
 	Name = "Anti Acid",
-	StartingState = false,
+	StartingState = true,
 	Description = "Stops acid from killing you.",
 	Callback = function(Value) 
 		for i, v in pairs(workspace.Map.AcidAbnormality:GetChildren()) do
@@ -241,7 +241,7 @@ Protection:Toggle{
 
 Protection:Toggle{
 	Name = "Anti Ice",
-	StartingState = false,
+	StartingState = true,
 	Description = "Stops ice abilities from affecting you.",
 	Callback = function(Value) 
 		getgenv().antiIce = Value
@@ -260,7 +260,7 @@ Protection:Toggle{
 
 Protection:Toggle{
 	Name = "Anti Lava",
-	StartingState = false,
+	StartingState = true,
 	Description = "Stops lava from killing you.",
 	Callback = function(Value) 
 		workspace.Map.DragonDepths.Lava.CanTouch = not value
@@ -324,7 +324,7 @@ Badges:Button{
 
 Misc:Toggle{
 	Name = "Item ESP",
-	StartingState = false,
+	StartingState = true,
 	Description = "Shows the location of every item in the map.",
 	Callback = function(Value) 
 		getgenv().itemESP = Value
@@ -359,7 +359,7 @@ Misc:Toggle{
 
 Misc:Toggle{
 	Name = "Disable Storm VFX",
-	StartingState = false,
+	StartingState = true,
 	Description = "Disables the visual effects of being in the storm.",
 	Callback = function(Value) 
 		getgenv().stormVFX = Value
