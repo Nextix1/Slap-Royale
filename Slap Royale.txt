@@ -134,9 +134,9 @@ local User = game.Players.LocalPlayer
 
 Combat:Slider{
 	Name = "Slap Aura",
-	Default = 8,
-	Min = 8,
-	Max = 9,
+	Default = 9,
+	Min = 9,
+	Max = 9.1,
 	Description = "Slaps every player near you. This is experimental, it may kick you.",
 	Callback = function(Value) 
 		getgenv().Range = Value
