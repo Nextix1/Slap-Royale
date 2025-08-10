@@ -284,25 +284,40 @@ Protection:Toggle{
 	end
 }
 
+local toggleActive = false
+
 Protection:Toggle{
 	Name = "Anti Ragdoll",
 	StartingState = true,
 	Description = "Breaks Ragdoll Functions",
 	Callback = function(Value)
-		G.AntiRagdoll = Value
+		toggleActive = Value
 
-		if Value then
+		if toggleActive then
 			task.spawn(function()
-				while G.AntiRagdoll do
-
-					if char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("Ragdolled") and char:FindFirstChild("Torso") then
-						if char.Ragdolled.Value == true then
-							task.wait(0.2)
-							char.Torso.Anchored = true
+				while toggleActive do
+					local character = game.Players.LocalPlayer.Character
+					if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Ragdolled") then
+						if character.Ragdolled.Value == true then
+							-- 0.3 saniye bekle
+							local ragdollStart = tick()
 							repeat
 								task.wait()
-							until char.Ragdolled.Value == false
-							char.Torso.Anchored = false
+							until not toggleActive or character.Ragdolled.Value == false or tick() - ragdollStart >= 0.3
+
+							if toggleActive and character.Ragdolled.Value == true and character:FindFirstChild("Torso") then
+								character.Torso.Anchored = true
+							end
+
+							-- Ragdoll bitene kadar bekle
+							repeat
+								task.wait()
+							until not toggleActive or character.Ragdolled.Value == false
+
+							-- Anchor'ı geri kapat
+							if character:FindFirstChild("Torso") then
+								character.Torso.Anchored = false
+							end
 						end
 					end
 					task.wait()
