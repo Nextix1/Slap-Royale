@@ -131,7 +131,9 @@ local Player = GUI:Tab{
 }
 
 local User = game.Players.LocalPlayer
-local player = game.Players.LocalPlayer
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local lastCFrame = nil
 
 
 Combat:Slider{
@@ -285,53 +287,57 @@ Protection:Toggle{
 	end
 }
 
-Protection:Toggle{
-	Name = "Safe Mode",
-	StartingState = true,
-	Description = "Activates Anti-Ragdoll in Serious Situations",
+Tab:Toggle{
+	Name = "Legit Anti-Ragdoll",
+	StartingState = false,
+	Description = "Anti Ragdoll",
 	Callback = function(value)
-		_G.AntiRagdoll = value
+		toggleEnabled = value
 
-		if not value then return end
-
-		
-		local function getParts()
-			local acid = workspace:FindFirstChild("Acid")
-			local lava = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("DragonDepths") and workspace.Map.DragonDepths:FindFirstChild("Lava")
-			return acid, lava
-		end
-
-		local proximityRange = 7
-		local healthThreshold = 35
-
-		coroutine.wrap(function()
-			while _G.AntiRagdoll do
-				local char = player.Character or player.CharacterAdded:Wait()
-
-				local hrp = char:FindFirstChild("HumanoidRootPart")
-				local torso = char:FindFirstChild("Torso")
-				local ragdoll = char:FindFirstChild("Ragdolled")
-				local humanoid = char:FindFirstChild("Humanoid")
-
-				local acid, lava = getParts()
-
-				if hrp and torso and ragdoll and humanoid then
-					local nearAcid = acid and (hrp.Position - acid.Position).Magnitude <= proximityRange
-					local nearLava = lava and (hrp.Position - lava.Position).Magnitude <= proximityRange
-					local lowHealth = humanoid.Health <= (humanoid.MaxHealth * (healthThreshold / 100))
-
-					if (nearAcid or nearLava or lowHealth) and ragdoll.Value == true then
-						repeat
-							torso.Anchored = true
-							task.wait()
-						until ragdoll.Value == false or not _G.AntiRagdoll
-						torso.Anchored = false
+		if toggleEnabled then
+			task.spawn(function()
+				while toggleEnabled do
+					local character = LocalPlayer.Character
+					if character and character:FindFirstChild("HumanoidRootPart") then
+						local hrp = character.HumanoidRootPart
+						-- Pozisyonu sürekli güncelle
+						lastCFrame = hrp.CFrame
 					end
+					task.wait()
 				end
+			end)
 
-				task.wait()
-			end
-		end)()
+			task.spawn(function()
+				while toggleEnabled do
+					local character = LocalPlayer.Character
+					if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Ragdolled") then
+						local ragdoll = character.Ragdolled
+						if ragdoll.Value == true then
+							local torso = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
+
+							if torso then
+								torso.Anchored = true
+							end
+
+							task.wait(1) -- Donma süresi
+
+							-- En son pozisyona geri dön
+							if character and character:FindFirstChild("HumanoidRootPart") and lastCFrame then
+								character.HumanoidRootPart.CFrame = lastCFrame
+							end
+
+							if torso then
+								torso.Anchored = false
+							end
+
+							-- Ragdoll spamını önlemek için kısa bekleme
+							repeat task.wait() until ragdoll.Value == false
+						end
+					end
+					task.wait()
+				end
+			end)
+		end
 	end
 }
 
