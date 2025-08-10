@@ -134,7 +134,7 @@ local User = game.Players.LocalPlayer
 
 Combat:Toggle{
 	Name = "Slap Aura",
-	StartingState = true,
+	StartingState = false,
 	Description = "Auto Slaps People",
 	Callback = function(Value)
 		SlapAura = Value
@@ -187,7 +187,7 @@ Combat:Toggle{
 
 Combat:Toggle{
 	Name = "Stat ESP",
-	StartingState = true,
+	StartingState = false,
 	Description = "Shows the glove players are using, and their power above their heads.",
 	Callback = function(Value) 
 		getgenv().statESP = Value
@@ -224,9 +224,91 @@ Combat:Toggle{
 	end
 }
 
+Combat:Toggle{
+	Name = "Auto Get All Items",
+	StartingState = false,
+	Description = "Slowly Gets All Items",
+	Callback = function(Value)
+		AutoGetAllItem = Value
+
+		task.spawn(function()
+			while AutoGetAllItem do
+				local player = game.Players.LocalPlayer
+				local character = player.Character or player.CharacterAdded:Wait()
+
+				if character:FindFirstChild("inMatch") and character.inMatch.Value == true then
+					for _, item in ipairs(game.Workspace.Items:GetChildren()) do
+						if not AutoGetAllItem then break end -- Toggle kapanırsa dur
+
+						if item:IsA("Tool") and item:FindFirstChild("Handle") then
+							item.Handle.Anchored = false
+							item.Handle.CFrame = character.HumanoidRootPart.CFrame
+							character.Humanoid:EquipTool(item)
+							character.Humanoid:UnequipTools()
+							task.wait(0.5) -- her item arasında 0.5 saniye bekle
+						end
+					end
+				end
+
+				task.wait() -- ana döngü içinde küçük bekleme
+			end
+		end)
+	end
+}
+
+local AutoUseItem = false
+
+Tab:Toggle{
+	Name = "Auto Use Items",
+	StartingState = false,
+	Description = "Automaticly Uses All Items",
+	Callback = function(Value)
+		AutoUseItem = Value
+
+		task.spawn(function()
+			while AutoUseItem do
+				local character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+
+				for _, tool in ipairs(character:GetChildren()) do
+					if not AutoUseItem then break end -- Toggle kapatıldıysa döngüden çık
+
+					if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
+						tool:Activate()
+						task.wait(0.5) -- Her item arasında 0.5 saniye bekle
+					end
+				end
+
+				task.wait() -- Ana döngü içinde kısa bekleme
+			end
+		end)
+	end
+}
+
+Tab:Button{
+	Name = "Get Out Of Bus Early",
+	Description = "Makes you jump out of bus early.",
+	Callback = function()
+		local replicatedStorage = game:GetService("ReplicatedStorage")
+		local player = game.Players.LocalPlayer
+		local playerGui = player:WaitForChild("PlayerGui")
+
+		-- Otobüsten atla
+		replicatedStorage.Events.BusJumping:FireServer()
+
+		-- JumpPrompt gelene kadar bekle
+		repeat task.wait() until playerGui:FindFirstChild("JumpPrompt")
+
+		-- JumpPrompt'u sil
+		local prompt = playerGui:FindFirstChild("JumpPrompt")
+		if prompt then
+			prompt:Destroy()
+		end
+	end
+}
+
 Protection:Toggle{
 	Name = "Anti Acid",
-	StartingState = true,
+	StartingState = false,
 	Description = "Stops acid from killing you.",
 	Callback = function(Value) 
 		for i, v in pairs(workspace.Map.AcidAbnormality:GetChildren()) do
@@ -240,7 +322,7 @@ Protection:Toggle{
 
 Protection:Toggle{
 	Name = "Anti Ice",
-	StartingState = true,
+	StartingState = false,
 	Description = "Stops ice abilities from affecting you.",
 	Callback = function(Value) 
 		getgenv().antiIce = Value
@@ -259,7 +341,7 @@ Protection:Toggle{
 
 Protection:Toggle{
 	Name = "Anti Lava",
-	StartingState = true,
+	StartingState = false,
 	Description = "Stops lava from killing you.",
 	Callback = function(Value) 
 		workspace.Map.DragonDepths.Lava.CanTouch = not value
@@ -269,7 +351,7 @@ Protection:Toggle{
 
 Protection:Toggle{
 	Name = "Anti Void",
-	StartingState = true,
+	StartingState = false,
 	Description = "Stops you from falling into the void.",
 	Callback = function(Value) 
 		getgenv().antiVoid = Value
@@ -286,7 +368,7 @@ local toggleActive = false
 
 Protection:Toggle{
 	Name = "Anti Ragdoll",
-	StartingState = true,
+	StartingState = false,
 	Description = "Breaks Ragdoll Functions",
 	Callback = function(Value)
 		toggleActive = Value
@@ -327,7 +409,7 @@ Protection:Toggle{
 
 Protection:Toggle = {
     Name = "Safe Mode",
-    StartingState = true,
+    StartingState = false,
     Description = "If your hp under 30 you will start running.",
     Callback = function(state)
         local character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
@@ -405,7 +487,7 @@ Badges:Button{
 
 Misc:Toggle{
 	Name = "Item ESP",
-	StartingState = true,
+	StartingState = false,
 	Description = "Shows the location of every item in the map.",
 	Callback = function(Value) 
 		getgenv().itemESP = Value
@@ -440,7 +522,7 @@ Misc:Toggle{
 
 Misc:Toggle{
 	Name = "Disable Storm VFX",
-	StartingState = true,
+	StartingState = false,
 	Description = "Disables the visual effects of being in the storm.",
 	Callback = function(Value) 
 		getgenv().stormVFX = Value
