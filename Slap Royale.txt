@@ -299,11 +299,11 @@ Protection:Toggle{
 					local character = game.Players.LocalPlayer.Character
 					if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Ragdolled") then
 						if character.Ragdolled.Value == true then
-							-- 0.3 saniye bekle
+							-- 0.35 saniye bekle
 							local ragdollStart = tick()
 							repeat
 								task.wait()
-							until not toggleActive or character.Ragdolled.Value == false or tick() - ragdollStart >= 0.3
+							until not toggleActive or character.Ragdolled.Value == false or tick() - ragdollStart >= 0.35
 
 							if toggleActive and character.Ragdolled.Value == true and character:FindFirstChild("Torso") then
 								character.Torso.Anchored = true
