@@ -132,60 +132,58 @@ local Player = GUI:Tab{
 
 local User = game.Players.LocalPlayer
 
-
-Combat:Slider{
+Combat:Toggle{
 	Name = "Slap Aura",
-	Default = 9,
-	Min = 9,
-	Max = 9.1,
-	Description = "Slaps every player near you. This is experimental, it may kick you.",
-	Callback = function(Value) 
-		getgenv().Range = Value
-		if getgenv().Range == 0 then
-			for i,v in pairs(User.Character:GetChildren()) do
-				if v.ClassName == "Tool" and v:FindFirstChild("Glove") then
-					v.Glove.CanTouch = true
-                   		end
-			end
-			for i,v in pairs(User.Backpack:GetChildren()) do
-				if v.ClassName == "Tool" and v:FindFirstChild("Glove") then
-					v.Glove.CanTouch = true
-                   		end
-			end
-		end
-	end
-}
+	StartingState = true,
+	Description = "Auto Slaps People",
+	Callback = function(Value)
+		SlapAura = Value
 
-if not getgenv().slapAura then
-	task.spawn(function()
-		getgenv().slapAura = true
-		getgenv().Range = 0
-		while task.wait() do
-			if getgenv().Range > 0 then
-				for i,v in pairs(User.Character:GetChildren()) do
-					if v.ClassName == "Tool" and v:FindFirstChild("Glove") then
-						v.Glove.CanTouch = false
-                   			end
-				end
-				for i,v in pairs(game.Players:GetChildren()) do
-					if v ~= User and User.Character:FindFirstChild("HumanoidRootPart") and v.Character then
-						if v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Ragdolled") and not v.Character:FindFirstChild("Dead") and v.Character:WaitForChild("inMatch").Value == true and v.Character.Ragdolled.Value == false then
-							Magnitude = (User.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude
-                        				if Magnitude <= getgenv().Range then
-								game.ReplicatedStorage.Events.Slap:FireServer(v.Character.HumanoidRootPart, true)
-								for i,g in pairs(User.Character:GetChildren()) do
-									if g.ClassName == "Tool" and g:FindFirstChild("Glove") then
-										g:Activate()
-                   							end
+		if SlapAura then
+			task.spawn(function()
+				while SlapAura do
+					pcall(function()
+						local player = game.Players.LocalPlayer
+						local character = player.Character
+						if not character then return end
+
+						local humanoid = character:FindFirstChildOfClass("Humanoid")
+						local hrp = character:FindFirstChild("HumanoidRootPart")
+						local inMatch = character:FindFirstChild("inMatch")
+
+						if not humanoid or not hrp or not inMatch or inMatch.Value ~= true then return end
+
+						-- Senin canına göre ReachAura belirleniyor
+						local ReachAura
+						if humanoid.Health > 30 then
+							ReachAura = 9
+						else
+							ReachAura = 12
+						end
+
+						-- Diğer oyunculara bak
+						for _, v in pairs(game.Players:GetPlayers()) do
+							if v ~= player and v.Character then
+								local targetChar = v.Character
+								local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
+								local targetInMatch = targetChar:FindFirstChild("inMatch")
+								local isDead = targetChar:FindFirstChild("Dead")
+
+								if targetHRP and targetInMatch and targetInMatch.Value == true and not isDead then
+									local distance = (hrp.Position - targetHRP.Position).Magnitude
+									if distance <= ReachAura then
+										game.ReplicatedStorage.Events.Slap:FireServer(targetHRP)
+									end
 								end
 							end
 						end
-					end
+					end)
+					task.wait()
 				end
-			end
+			end)
 		end
-	end)
-end
+	end
+}
 
 Combat:Toggle{
 	Name = "Stat ESP",
@@ -325,6 +323,45 @@ Protection:Toggle{
 			end)
 		end
 	end
+}
+
+Protection:Toggle = {
+    Name = "Safe Mode",
+    StartingState = true,
+    Description = "If your hp under 30 you will start running.",
+    Callback = function(state)
+        local character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+        
+        if state then
+            local runService = game:GetService("RunService")
+            local connection
+            
+            connection = runService.Heartbeat:Connect(function()
+                if character and character:FindFirstChild("Humanoid") then
+                    local humanoid = character.Humanoid
+                    if humanoid.Health < 30 then
+                        humanoid.WalkSpeed = 24
+                    else
+                        humanoid.WalkSpeed = 20 -- normal hız 20 olarak değişti
+                    end
+                else
+                    connection:Disconnect()
+                end
+            end)
+            
+            Tab.Toggle.connection = connection
+            
+        else
+            if Tab.Toggle.connection then
+                Tab.Toggle.connection:Disconnect()
+                Tab.Toggle.connection = nil
+            end
+            
+            if character and character:FindFirstChild("Humanoid") then
+                character.Humanoid.WalkSpeed = 20 -- Toggle kapalıyken de normal hız 20 olsun
+            end
+        end
+    end
 }
 
 Badges:Button{
