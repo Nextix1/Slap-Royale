@@ -131,9 +131,6 @@ local Player = GUI:Tab{
 }
 
 local User = game.Players.LocalPlayer
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local lastCFrame = nil
 
 
 Combat:Slider{
@@ -274,7 +271,7 @@ Protection:Toggle{
 
 Protection:Toggle{
 	Name = "Anti Void",
-	StartingState = false,
+	StartingState = true,
 	Description = "Stops you from falling into the void.",
 	Callback = function(Value) 
 		getgenv().antiVoid = Value
@@ -287,51 +284,24 @@ Protection:Toggle{
 	end
 }
 
-Tab:Toggle{
-	Name = "Legit Anti-Ragdoll",
-	StartingState = false,
-	Description = "Anti Ragdoll",
-	Callback = function(value)
-		toggleEnabled = value
+Protection:Toggle{
+	Name = "Anti Ragdoll",
+	StartingState = true,
+	Description = "Breaks Ragdoll Functions",
+	Callback = function(Value)
+		G.AntiRagdoll = Value
 
-		if toggleEnabled then
+		if Value then
 			task.spawn(function()
-				while toggleEnabled do
-					local character = LocalPlayer.Character
-					if character and character:FindFirstChild("HumanoidRootPart") then
-						local hrp = character.HumanoidRootPart
-						-- Pozisyonu sürekli güncelle
-						lastCFrame = hrp.CFrame
-					end
-					task.wait()
-				end
-			end)
-
-			task.spawn(function()
-				while toggleEnabled do
-					local character = LocalPlayer.Character
-					if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Ragdolled") then
-						local ragdoll = character.Ragdolled
-						if ragdoll.Value == true then
-							local torso = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
-
-							if torso then
-								torso.Anchored = true
-							end
-
-							task.wait(1) -- Donma süresi
-
-							-- En son pozisyona geri dön
-							if character and character:FindFirstChild("HumanoidRootPart") and lastCFrame then
-								character.HumanoidRootPart.CFrame = lastCFrame
-							end
-
-							if torso then
-								torso.Anchored = false
-							end
-
-							-- Ragdoll spamını önlemek için kısa bekleme
-							repeat task.wait() until ragdoll.Value == false
+				while G.AntiRagdoll do
+					if char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("Ragdolled") and char:FindFirstChild("Torso") then
+						if char.Ragdolled.Value == true then
+							task.wait(0.4)
+							char.Torso.Anchored = true
+							repeat
+								task.wait()
+							until char.Ragdolled.Value == false
+							char.Torso.Anchored = false
 						end
 					end
 					task.wait()
