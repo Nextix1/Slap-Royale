@@ -306,7 +306,7 @@ Combat:AddToggle({
 						}
 						ItemEvent:FireServer(unpack(args))
 
-						task.wait()
+						task.wait(1)
 					end
 				end
 			end
