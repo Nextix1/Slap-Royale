@@ -291,7 +291,7 @@ end
 	end    
 })
 
-Tab:AddButton({
+Combat:AddButton({
 	Name = "Bomb Bus",
 	Callback = function()
 if game.Players.LocalPlayer.Character:WaitForChild("inMatch").Value == true then
