@@ -131,7 +131,7 @@ Combat:AddSlider({
 Combat:AddSlider({
 	Name = "Extend Glove Range",
 	Min = 1,
-	Max = 50,
+	Max = 60,
 	Default = 1,
 	Color = Color3.fromRGB(255,255,255),
 	Increment = 1,
