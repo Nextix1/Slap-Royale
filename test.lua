@@ -1,0 +1,660 @@
+if not game:IsLoaded() then
+	game.Loaded:Wait()
+end
+
+game:GetService("GuiService"):ClearError()
+
+local OrionLib = loadstring(game:HttpGet(("https://raw.githubusercontent.com/Guy-that-exists/1-Line-Scripts/refs/heads/main/Mobile%20Friendly%20Orion")))()
+local Window = OrionLib:MakeWindow({Name = "Slap Royale", IntroEnabled = false, SaveConfig = false, ConfigFolder = "SR"})
+
+
+if game.ReplicatedStorage:FindFirstChild("Ban") then
+	game.ReplicatedStorage.Ban:Destroy()
+end
+if game.ReplicatedStorage:FindFirstChild("GRAB") then
+	game.ReplicatedStorage.GRAB:Destroy()
+end
+if game.ReplicatedStorage:FindFirstChild("RemoteEvent") then
+	game.ReplicatedStorage.RemoteEvent:Destroy()
+end
+if game.ReplicatedStorage.Events:FindFirstChild("AdminGUI") then
+	game.ReplicatedStorage.Events.AdminGUI:Destroy()
+end
+if game.ReplicatedStorage.Events:FindFirstChild("Ban") then
+	game.ReplicatedStorage.Events.Ban:Destroy()
+end
+if game.ReplicatedStorage.Events:FindFirstChild("WS") then
+	game.ReplicatedStorage.Events.WS:Destroy()
+end
+if game.ReplicatedStorage.Events:FindFirstChild("WS2") then
+	game.ReplicatedStorage.Events.WS2:Destroy()
+end
+
+local function disableAdminActions()
+    local oldNamecall = getnamecallmethod()
+    local oldIndex = getmetatable(game).__index
+
+    local function newNamecall(...)
+        local method = getnamecallmethod()
+        local args = { ... }
+
+        local blockedMethods = { "Kick", "Ban", "Votekick" }
+
+        for _, blocked in ipairs(blockedMethods) do
+            if method:lower():find(blocked:lower()) then
+                if type(args[1]) == "string" and args[1]:find("Player") then
+                    return nil
+                end
+            end
+        end
+
+        if method:lower() == "remove" then
+            if typeof(args[1]) == "Instance" and args[1].ClassName == "Player" then
+                if args[1] == game.Players.LocalPlayer then
+                    return nil
+                end
+            end
+        end
+
+        return oldNamecall(...)
+    end
+
+    local function newIndex(self, key)
+        local blockedKeys = { "Kick", "Ban", "Votekick" }
+
+        for _, blocked in ipairs(blockedKeys) do
+            if key:lower() == blocked:lower() then
+                return function() end
+            end
+        end
+
+        return oldIndex(self, key)
+    end
+
+    setmetatable(game, {
+        __namecall = newNamecall,
+        __index = newIndex
+    })
+end
+
+disableAdminActions()
+
+game:GetService("Players").LocalPlayer.AncestryChanged:Connect(function()
+	if game:GetService("Players").LocalPlayer.Parent ~= game:GetService("Players") then
+		game:GetService("Players").LocalPlayer.Parent = game:GetService("Players")
+	end
+end)
+
+if not workspace:FindFirstChild("AntiVoid") then
+	local antiVoid = Instance.new("Part", workspace)
+	antiVoid.Position = Vector3.new(0, -35, -150)
+	antiVoid.Name = "AntiVoid"
+	antiVoid.Anchored = true
+	antiVoid.CanCollide = false
+	antiVoid.Size = Vector3.new(2048,16,2048)
+	antiVoid.Transparency = 0
+	antiVoid.Material = Enum.Material.ForceField
+	mesh = Instance.new("SpecialMesh", antiVoid)
+	mesh.TextureId = "rbxassetid://5101923607"
+	mesh.Scale = Vector3.new(2048,16,2048)
+end
+
+code = {}
+for i,v in pairs(workspace.Map:WaitForChild("CodeBrick").SurfaceGui:GetChildren()) do
+	if v.Name == "IMGTemplate" then
+        	if v.Image == "http://www.roblox.com/asset/?id=9648769161" then
+            		table.insert(code, "4")
+        	elseif v.Image == "http://www.roblox.com/asset/?id=9648765536" then
+            		table.insert(code, "2")
+        	elseif v.Image == "http://www.roblox.com/asset/?id=9648762863" then
+            		table.insert(code, "3")
+        	elseif v.Image == "http://www.roblox.com/asset/?id=9648759883" then
+            		table.insert(code, "9")
+        	elseif v.Image == "http://www.roblox.com/asset/?id=9648755440" then
+            		table.insert(code, "8")
+        	elseif v.Image == "http://www.roblox.com/asset/?id=9648752438" then
+            		table.insert(code, "2")
+        	elseif v.Image == "http://www.roblox.com/asset/?id=9648749145" then
+            		table.insert(code, "8")
+        	elseif v.Image == "http://www.roblox.com/asset/?id=9648745618" then
+            		table.insert(code, "3")
+        	elseif v.Image == "http://www.roblox.com/asset/?id=9648742013" then
+			table.insert(code, "7")
+        	elseif v.Image == "http://www.roblox.com/asset/?id=9648738553" then
+            		table.insert(code, "8")
+        	elseif v.Image == "http://www.roblox.com/asset/?id=9648734698" then
+            		table.insert(code, "2")
+        	elseif v.Image == "http://www.roblox.com/asset/?id=9648730082" then
+            		table.insert(code, "6")
+        	elseif v.Image == "http://www.roblox.com/asset/?id=9648723237" then
+            		table.insert(code, "3")
+        	elseif v.Image == "http://www.roblox.com/asset/?id=9648718450" then
+            		table.insert(code, "6")
+        	elseif v.Image == "http://www.roblox.com/asset/?id=9648715920" then
+            		table.insert(code, "6")
+       		elseif v.Image == "http://www.roblox.com/asset/?id=9648712563" then
+            		table.insert(code, "2")
+        	end
+    	end
+end
+
+local User = game.Players.LocalPlayer
+
+local Combat = Window:MakeTab({
+	Name = "Combat",
+	Icon = "http://www.roblox.com/asset/?id=7733674079",
+	PremiumOnly = false
+})
+
+local Protection = Window:MakeTab({
+	Name = "Protection",
+	Icon = "http://www.roblox.com/asset/?id=7734056608",
+	PremiumOnly = false
+})
+
+local Misc = Window:MakeTab({
+	Name = "Misc",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local Player = Window:MakeTab({
+	Name = "Player",
+	Icon = "http://www.roblox.com/asset/?id=4335489011",
+	PremiumOnly = false
+})
+
+Combat:AddSlider({
+	Name = "Slap Aura Range",
+	Min = 8,
+	Max = 60,
+	Default = 8,
+	Color = Color3.fromRGB(140, 185, 255),
+	Increment = 1,
+	ValueName = "Range",
+	Callback = function(Value)
+		ReachAura = Value
+	end    
+})
+
+Combat:AddSlider({
+	Name = "Extend Glove Range",
+	Min = 1,
+	Max = 50,
+	Default = 1,
+	Color = Color3.fromRGB(255,255,255),
+	Increment = 1,
+	ValueName = "Range",
+	Callback = function(Value)
+		_G.GloveExtendReach = Value
+	end    
+})
+
+Combat:AddDropdown({
+	Name = "Extend Type",
+	Default = "Stick",
+	Options = {"Stick","Pancake","Growth","Wall","Slightly Extended"},
+	Callback = function(Value)
+GloveExtendOption = Value
+	end    
+})
+
+Combat:AddToggle({
+	Name = "Slap Aura",
+	Default = false,
+	Callback = function(Value)
+		SlapAura = Value
+                while SlapAura do
+pcall(function()
+for i,v in pairs(game.Players:GetChildren()) do
+                    if v ~= game.Players.LocalPlayer and v.Character then
+if v.Character:FindFirstChild("Dead") == nil and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:WaitForChild("inMatch").Value == true and game.Players.LocalPlayer.Character:WaitForChild("inMatch").Value == true then
+Magnitude = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude
+                        if ReachAura >= Magnitude then
+game.ReplicatedStorage.Events.Slap:FireServer(v.Character:WaitForChild("HumanoidRootPart"))
+                    end
+end
+end
+                end
+end)
+task.wait()
+end
+	end    
+})
+
+Combat:AddToggle({
+	Name = "Extend Glove",
+	Default = false,
+	Callback = function(Value)
+_G.GloveExtendGet = Value
+while _G.GloveExtendGet do
+if game.Players.LocalPlayer:WaitForChild("Backpack"):FindFirstChildOfClass("Tool") ~= nil then
+for _,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+                    if v:IsA("Tool") and v.Name ~= "Radio" then
+                        if v:FindFirstChild("Glove") ~= nil then
+                          if GloveExtendOption == "Stick" then
+                            v:FindFirstChild("Glove").Size = Vector3.new(0, _G.GloveExtendReach, 2)
+                            elseif GloveExtendOption == "Pancake" then
+                            v:FindFirstChild("Glove").Size = Vector3.new(0, _G.GloveExtendReach, _G.GloveExtendReach)
+                            elseif GloveExtendOption == "Growth" then
+                            v:FindFirstChild("Glove").Size = Vector3.new(_G.GloveExtendReach,_G.GloveExtendReach,_G.GloveExtendReach)
+                            elseif GloveExtendOption == "Wall" then
+                            v:FindFirstChild("Glove").Size = Vector3.new(_G.GloveExtendReach,0,_G.GloveExtendReach)
+                            elseif GloveExtendOption == "Slightly Extended" then
+                            v:FindFirstChild("Glove").Size = Vector3.new(3, 3, 3.7)
+                            end
+                            
+                        	v:FindFirstChild("Glove").Transparency = 0.5
+                        end
+                    end
+                end
+else
+for _,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+                    if v:IsA("Tool") and v.Name ~= "Radio" then
+                        if v:FindFirstChild("Glove") ~= nil then
+                            if GloveExtendOption == "Stick" then
+                            v:FindFirstChild("Glove").Size = Vector3.new(0, _G.GloveExtendReach, 2)
+                            elseif GloveExtendOption == "Pancake" then
+                            v:FindFirstChild("Glove").Size = Vector3.new(0, _G.GloveExtendReach, _G.GloveExtendReach)
+                            elseif GloveExtendOption == "Growth" then
+                            v:FindFirstChild("Glove").Size = Vector3.new(_G.GloveExtendReach,_G.GloveExtendReach,_G.GloveExtendReach)
+                            elseif GloveExtendOption == "Wall" then
+                            v:FindFirstChild("Glove").Size = Vector3.new(_G.GloveExtendReach,0,_G.GloveExtendReach)
+                            elseif GloveExtendOption == "Slightly Extended" then
+                            v:FindFirstChild("Glove").Size = Vector3.new(3, 3, 3.7)
+                            end
+                            v:FindFirstChild("Glove").Transparency = 0.5
+                        end
+                    end
+                end
+           end
+	task.wait()
+end
+if _G.GloveExtendGet == false then
+if game.Players.LocalPlayer:WaitForChild("Backpack"):FindFirstChildOfClass("Tool") ~= nil then
+for _,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+                    if v:IsA("Tool") and v.Name ~= "Radio" then
+                        if v:FindFirstChild("Glove") ~= nil then
+                            v:FindFirstChild("Glove").Size = Vector3.new(2.5, 2.5, 1.7)
+                            v:FindFirstChild("Glove").Transparency = 0
+                        end
+                    end
+                end
+else
+for _,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+                    if v:IsA("Tool") and v.Name ~= "Radio" then
+                        if v:FindFirstChild("Glove") ~= nil then
+                            v:FindFirstChild("Glove").Size = Vector3.new(2.5, 2.5, 1.7)
+                            v:FindFirstChild("Glove").Transparency = 0
+                        end
+                    end
+                end
+end
+end
+	end    
+})
+
+Combat:AddButton({
+	Name = "Leave Bus Early [Ban Chance]",
+	Callback = function()
+game:GetService("ReplicatedStorage").Events.BusJumping:FireServer()
+repeat task.wait() until game.Players.LocalPlayer.PlayerGui:FindFirstChild("JumpPrompt")
+game.Players.LocalPlayer.PlayerGui.JumpPrompt:Destroy()
+	end    
+})
+
+Combat:AddToggle({
+	Name = "Auto Get All Items",
+	Default = false,
+	Callback = function(Value)
+_G.AutoGetAllItem = Value
+while _G.AutoGetAllItem do
+if game.Players.LocalPlayer.Character.inMatch.Value == true then
+            for i, v in ipairs(game.Workspace.Items:GetChildren()) do
+                if v.ClassName == "Tool" and v:FindFirstChild("Handle") then
+                    v.Handle.Anchored = false
+                    v.Handle.CFrame = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame
+                    game.Players.LocalPlayer.Character.Humanoid:EquipTool(v)
+                    game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
+                end
+            end
+end
+task.wait()
+end
+	end    
+})
+
+Combat:AddToggle({
+	Name = "Auto Use Items",
+	Default = false,
+	Callback = function(Value)
+_G.AutoUseItem = Value
+while _G.AutoUseItem do
+for i, v in ipairs(game.Players.LocalPlayer.Character:GetChildren()) do
+                 if v.ClassName == "Tool" and v:FindFirstChild("Handle") then
+                    v:Activate()
+                end
+            end
+task.wait()
+end
+	end    
+})
+
+Tab:AddButton({
+	Name = "Bomb Bus",
+	Callback = function()
+if game.Players.LocalPlayer.Character:WaitForChild("inMatch").Value == true then
+for i, v in ipairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+            if v.Name == "Bomb" then
+                game.Players.LocalPlayer.Character.Humanoid:EquipTool(v)
+                v:Activate()
+            end
+        end
+else
+OrionLib:MakeNotification({Name = "Error", Content = "You must be inside the bus.",Image = "rbxassetid://7733658504",Time = 5})
+end
+	end    
+})
+
+Protection:AddToggle({
+	Name = "Anti Acid",
+	Default = false,
+	Callback = function(Value)
+		for i, v in pairs(workspace.Map.AcidAbnormality:GetChildren()) do
+			if v.Name == "Acid" and v.ClassName == "Part" then
+				v.CanTouch = not Value
+				v.CanCollide = Value
+    			end
+		end
+	end    
+})
+
+Protection:AddToggle({
+	Name = "Anti Lava",
+	Default = false,
+	Callback = function(Value)
+		workspace.Map.DragonDepths.Lava.CanTouch = not Value
+		workspace.Map.DragonDepths.Lava.CanCollide = Value
+	end    
+})
+
+Protection:AddToggle({
+	Name = "Anti Void",
+	Default = false,
+	Callback = function(Value)
+		getgenv().antiVoid = Value
+		workspace.AntiVoid.CanCollide = getgenv().antiVoid
+		if getgenv().antiVoid == true then
+			workspace.AntiVoid.Transparency = 0.75
+		else
+			workspace.AntiVoid.Transparency = 1
+		end
+	end    
+})
+
+Protection:AddToggle({
+	Name = "Anti Ice",
+	Default = false,
+	Callback = function(Value)
+		getgenv().antiIce = Value
+		while getgenv().antiIce do
+			for i,v in pairs(User.Character:GetChildren()) do
+				if v.Name == "Icecube" then
+					v:Destroy()
+					User.Character.Humanoid.PlatformStand = false
+					User.Character.Humanoid.AutoRotate = true
+				end
+			end
+			wait()
+		end
+	end    
+})
+
+Protection:AddToggle({
+	Name = "Anti Storm VFX",
+	Default = false,
+	Callback = function(Value)
+		getgenv().stormVFX = Value
+		while getgenv().stormVFX do
+			if User.Character.inZone.Value == true then
+				User.Character.inZone.Value = false
+			end
+			wait()
+		end
+	end    
+})
+
+Protection:AddToggle({
+	Name = "Anti Ragdoll",
+	Default = false,
+	Callback = function(Value)
+        _G.AntiRagdoll = Value
+while _G.AntiRagdoll  do
+if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart") then
+if game.Players.LocalPlayer.Character:WaitForChild("Ragdolled").Value == true then
+repeat task.wait() game.Players.LocalPlayer.Character.Torso.Anchored = true
+until game.Players.LocalPlayer.Character:WaitForChild("Ragdolled").Value == false
+game.Players.LocalPlayer.Character.Torso.Anchored = false
+end
+end
+task.wait()
+end
+	end    
+})
+
+Misc:AddButton({
+	Name = "Get Bunker Code",
+	Callback = function()
+		OrionLib:MakeNotification({
+			Name = "Code:",
+			Content = table.concat(code),
+			Time = 5
+		})
+	end
+})
+
+Misc:AddButton({
+	Name = "Open The Bunker",
+	Callback = function()
+		fireclickdetector(workspace.Map.OriginOffice.Door.Keypad.Buttons.Reset.ClickDetector)
+		wait(0.3)
+		for i = 1, 4 do
+			fireclickdetector(workspace.Map.OriginOffice.Door.Keypad.Buttons[code[i]].ClickDetector)
+			wait(0.3)
+		end
+		fireclickdetector(workspace.Map.OriginOffice.Door.Keypad.Buttons.Enter.ClickDetector)
+	end
+})
+
+Misc:AddToggle({
+	Name = "Stats ESP",
+	Default = false,
+	Callback = function(Value)
+		getgenv().statESP = Value
+		for i, v in pairs(game.Players:GetChildren()) do
+			if v.Character and v.Character:FindFirstChild("Head") and v.Character.Head:FindFirstChild("StatEsp") then
+				v.Character.Head.StatEsp:Destroy()
+    			end
+		end
+		while getgenv().statESP do
+			for i, v in pairs(game.Players:GetChildren()) do
+    				if v ~= User and v.Character and v.Character:FindFirstChild("Head") and not v.Character:FindFirstChild("Dead") and not v.Character.Head:FindFirstChild("StatEsp") then
+					StatEsp = Instance.new("BillboardGui", v.Character.Head)
+					StatEsp.Name = "StatEsp"
+					StatEsp.Size = UDim2.new(0, 100, 0, 150)
+					StatEsp.AlwaysOnTop = true
+					StatEsp.StudsOffset = Vector3.new(0, -1, 0)
+					StatEspText = Instance.new("TextLabel", StatEsp)
+					StatEspText.BackgroundTransparency = 1
+					StatEspText.Size = UDim2.new(0, 100, 0, 100)
+					StatEspText.TextSize = 20
+					StatEspText.Font = Enum.Font.SourceSansSemibold
+					StatEspText.TextColor3 = Color3.new(1, 1, 1)
+					StatEspText.TextStrokeTransparency = 0
+					StatEspText.TextYAlignment = Enum.TextYAlignment.Center
+					StatEspText.Text = "Glove: " .. v.Glove.Value .. " | Power: " .. v.Character.Power.Value
+				elseif v ~= User and v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Dead") and v.Character.Head:FindFirstChild("StatEsp") then
+					v.Character.Head.StatEsp:Destroy()
+				elseif v ~= User and v.Character and v.Character:FindFirstChild("Head") and v.Character.Head:FindFirstChild("StatEsp") and v.Character.Head.StatEsp.TextLabel.Text ~= "Glove: " .. v.Glove.Value .. " | Power: " .. v.Character.Power.Value then
+					v.Character.Head.StatEsp.TextLabel.Text = "Glove: " .. v.Glove.Value .. " | Power: " .. v.Character.Power.Value
+				end
+			end
+			wait()
+		end
+	end    
+})
+
+Misc:AddToggle({
+	Name = "Item ESP",
+	Default = false,
+	Callback = function(Value)
+		getgenv().itemESP = Value
+		for i, v in pairs(workspace.Items:GetChildren()) do
+			if v:FindFirstChild("Handle") and v.Handle:FindFirstChild("ItemEsp") then
+				v.Handle.ItemEsp:Destroy()
+    			end
+		end
+		while getgenv().itemESP do
+			for i, v in pairs(workspace.Items:GetChildren()) do
+    				if v:FindFirstChild("Handle") and not v.Handle:FindFirstChild("ItemEsp") then
+					ItemEsp = Instance.new("BillboardGui", v.Handle)
+					ItemEsp.Name = "ItemEsp"
+					ItemEsp.Size = UDim2.new(0, 100, 0, 150)
+					ItemEsp.AlwaysOnTop = true
+					ItemEsp.StudsOffset = Vector3.new(0, -1, 0)
+					ItemEspText = Instance.new("TextLabel", ItemEsp)
+					ItemEspText.BackgroundTransparency = 1
+					ItemEspText.Size = UDim2.new(0, 100, 0, 100)
+					ItemEspText.TextSize = 15
+					ItemEspText.Font = Enum.Font.SourceSansSemibold
+					ItemEspText.TextColor3 = Color3.new(1, 1, 1)
+					ItemEspText.TextStrokeTransparency = 0
+					ItemEspText.TextYAlignment = Enum.TextYAlignment.Center
+					ItemEspText.Text = v.Name
+				end
+			end
+			wait()
+		end
+	end    
+})
+
+Player:AddTextbox({
+	Name = "Fly Speed",
+	Default = "",
+	TextDisappear = false,
+	Callback = function(Value)
+_G.SetSpeedFly = Value
+	end	  
+})
+
+Player:AddToggle({
+	Name = "Fly",
+	Default = false,
+	Callback = function(Value)
+	 _G.StartFly = Value
+if _G.StartFly == false then
+if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid") and game.Players.LocalPlayer.Character.Humanoid.RootPart and game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("VelocityHandler") and game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("GyroHandler") then
+game.Players.LocalPlayer.Character.HumanoidRootPart.VelocityHandler:Destroy()
+game.Players.LocalPlayer.Character.HumanoidRootPart.GyroHandler:Destroy()
+game.Players.LocalPlayer.Character.Humanoid.PlatformStand = false
+end
+end
+while _G.StartFly do
+if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid") and game.Players.LocalPlayer.Character.Humanoid.RootPart and game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("VelocityHandler") and game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("GyroHandler") then
+game.Players.LocalPlayer.Character.HumanoidRootPart.VelocityHandler.MaxForce = Vector3.new(9e9,9e9,9e9)
+game.Players.LocalPlayer.Character.HumanoidRootPart.GyroHandler.MaxTorque = Vector3.new(9e9,9e9,9e9)
+game.Players.LocalPlayer.Character.Humanoid.PlatformStand = true
+game.Players.LocalPlayer.Character.HumanoidRootPart.GyroHandler.CFrame = Workspace.CurrentCamera.CoordinateFrame
+game.Players.LocalPlayer.Character.HumanoidRootPart.VelocityHandler.Velocity = Vector3.new()
+	if
+	require(game.Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule")):GetMoveVector().X > 0 then
+game.Players.LocalPlayer.Character.HumanoidRootPart.VelocityHandler.Velocity = game.Players.LocalPlayer.Character.HumanoidRootPart.VelocityHandler.Velocity + game.Workspace.CurrentCamera.CFrame.RightVector * (require(game.Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule")):GetMoveVector().X * _G.SetSpeedFly)
+end
+if require(game.Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule")):GetMoveVector().X < 0 then
+game.Players.LocalPlayer.Character.HumanoidRootPart.VelocityHandler.Velocity = game.Players.LocalPlayer.Character.HumanoidRootPart.VelocityHandler.Velocity + game.Workspace.CurrentCamera.CFrame.RightVector * (require(game.Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule")):GetMoveVector().X * _G.SetSpeedFly)
+end
+if require(game.Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule")):GetMoveVector().Z > 0 then
+game.Players.LocalPlayer.Character.HumanoidRootPart.VelocityHandler.Velocity = game.Players.LocalPlayer.Character.HumanoidRootPart.VelocityHandler.Velocity - game.Workspace.CurrentCamera.CFrame.LookVector * (require(game.Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule")):GetMoveVector().Z * _G.SetSpeedFly)
+end
+	if
+	require(game.Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule")):GetMoveVector().Z > 0 then
+game.Players.LocalPlayer.Character.HumanoidRootPart.VelocityHandler.Velocity = game.Players.LocalPlayer.Character.HumanoidRootPart.VelocityHandler.Velocity - game.Workspace.CurrentCamera.CFrame.LookVector * (require(game.Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule")):GetMoveVector().Z * _G.SetSpeedFly)
+end
+if require(game.Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule")):GetMoveVector().Z < 0 then
+game.Players.LocalPlayer.Character.HumanoidRootPart.VelocityHandler.Velocity = game.Players.LocalPlayer.Character.HumanoidRootPart.VelocityHandler.Velocity - game.Workspace.CurrentCamera.CFrame.LookVector * (require(game.Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule")):GetMoveVector().Z * _G.SetSpeedFly)
+end
+elseif game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid") and game.Players.LocalPlayer.Character.Humanoid.RootPart and game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("VelocityHandler") == nil and game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("GyroHandler") == nil then
+local bv = Instance.new("BodyVelocity")
+local bg = Instance.new("BodyGyro")
+
+bv.Name = "VelocityHandler"
+bv.Parent = game.Players.LocalPlayer.Character.HumanoidRootPart
+bv.MaxForce = Vector3.new(0,0,0)
+	bv.Velocity = Vector3.new(0,0,0)
+
+bg.Name = "GyroHandler"
+bg.Parent = game.Players.LocalPlayer.Character.HumanoidRootPart
+bg.MaxTorque = Vector3.new(0,0,0)
+bg.P = 1000
+bg.D = 50
+end
+task.wait()
+end
+	end    
+})
+
+Player:AddSlider({
+	Name = "Walkspeed",
+	Min = 20,
+	Max = 1000,
+	Default = 20,
+	Color = Color3.fromRGB(140, 185, 255),
+	Increment = 1,
+	ValueName = "WS",
+	Callback = function(Value)
+		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+Walkspeed = Value
+	end    
+})
+
+Player:AddToggle({
+	Name = "Keep Walkspeed",
+	Default = false,
+	Callback = function(Value)
+KeepWalkspeed = Value
+            while KeepWalkspeed do
+                if game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") ~= nil and game.Players.LocalPlayer.Character.Humanoid.WalkSpeed ~= Walkspeed then
+                    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Walkspeed
+                end
+task.wait()
+            end
+	end    
+})
+
+Player:AddSlider({
+	Name = "Jumppower",
+	Min = 50,
+	Max = 1000,
+	Default = 50,
+	Color = Color3.fromRGB(255, 185, 140),
+	Increment = 1,
+	ValueName = "JP",
+	Callback = function(Value)
+		game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+Jumppower = Value
+	end    
+})
+
+Player:AddToggle({
+	Name = "Keep Jumppower",
+	Default = false,
+	Callback = function(Value)
+KeepJumppower = Value
+            while KeepJumppower do
+                if game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") ~= nil and game.Players.LocalPlayer.Character.Humanoid.WalkSpeed ~= Jumppower then
+                    game.Players.LocalPlayer.Character.Humanoid.JumpPower = Jumppower
+                end
+task.wait()
+            end
+	end    
+})
