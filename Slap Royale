@@ -266,31 +266,24 @@ Combat:AddToggle({
 	Default = false,
 	Callback = function(Value)
 		_G.AutoGetAllItem = Value
-		
-		if Value then
-		    
-			repeat task.wait() until game.Players.LocalPlayer.Character.inMatch.Value == true
-			
-			game: GetService("Workspace").Map.Originoffice: Destroy()
-			game:GetService("ReplicatedStorage").Events.BusJumping:FireServer()
-	        game:GetService("ReplicatedStorage").Events.GliderUnequipped:FireServer()
-
-			
-			while _G.AutoGetAllItem do
+		while _G.AutoGetAllItem do
+			if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("inMatch") and game.Players.LocalPlayer.Character.inMatch.Value == true then
+				local ReplicatedStorage = game:GetService("ReplicatedStorage")
+				local ItemEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("Item")
+				local character = game.Players.LocalPlayer.Character
+				
 				for i, v in ipairs(game.Workspace.Items:GetChildren()) do
 					if v.ClassName == "Tool" and v:FindFirstChild("Handle") then
+						v.Handle.CFrame = character.HumanoidRootPart.CFrame
 						
-						game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Handle.CFrame
-						
-						task.wait(0.4)
-						
-						
-						game.Players.LocalPlayer.Character.Humanoid:EquipTool(v)
-						game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
+						local args = {
+							v.Handle
+						}
+						ItemEvent:FireServer(unpack(args))
 					end
 				end
-				task.wait()
 			end
+			task.wait(0.4)
 		end
 	end    
 })
