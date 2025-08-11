@@ -658,3 +658,5 @@ task.wait()
             end
 	end    
 })
+
+OrionLib:Init()
