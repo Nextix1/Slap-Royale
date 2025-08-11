@@ -30,55 +30,6 @@ if game.ReplicatedStorage.Events:FindFirstChild("WS2") then
 	game.ReplicatedStorage.Events.WS2:Destroy()
 end
 
-local function disableAdminActions()
-    local oldNamecall = getnamecallmethod()
-    local oldIndex = getmetatable(game).__index
-
-    local function newNamecall(...)
-        local method = getnamecallmethod()
-        local args = { ... }
-
-        local blockedMethods = { "Kick", "Ban", "Votekick" }
-
-        for _, blocked in ipairs(blockedMethods) do
-            if method:lower():find(blocked:lower()) then
-                if type(args[1]) == "string" and args[1]:find("Player") then
-                    return nil
-                end
-            end
-        end
-
-        if method:lower() == "remove" then
-            if typeof(args[1]) == "Instance" and args[1].ClassName == "Player" then
-                if args[1] == game.Players.LocalPlayer then
-                    return nil
-                end
-            end
-        end
-
-        return oldNamecall(...)
-    end
-
-    local function newIndex(self, key)
-        local blockedKeys = { "Kick", "Ban", "Votekick" }
-
-        for _, blocked in ipairs(blockedKeys) do
-            if key:lower() == blocked:lower() then
-                return function() end
-            end
-        end
-
-        return oldIndex(self, key)
-    end
-
-    setmetatable(game, {
-        __namecall = newNamecall,
-        __index = newIndex
-    })
-end
-
-disableAdminActions()
-
 game:GetService("Players").LocalPlayer.AncestryChanged:Connect(function()
 	if game:GetService("Players").LocalPlayer.Parent ~= game:GetService("Players") then
 		game:GetService("Players").LocalPlayer.Parent = game:GetService("Players")
