@@ -265,6 +265,7 @@ if game.Players.LocalPlayer.Character.inMatch.Value == true then
                 if v.ClassName == "Tool" and v:FindFirstChild("Handle") then
                     v.Handle.Anchored = false
                     v.Handle.CFrame = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame
+                    task.wait(30)
                     game.Players.LocalPlayer.Character.Humanoid:EquipTool(v)
                     game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
                 end
