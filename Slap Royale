@@ -265,49 +265,49 @@ Combat:AddToggle({
 	Name = "Auto Get All Items",
 	Default = false,
 	Callback = function(Value)
-		_G.AutoGetAllItem = Value
-		local TweenService = game:GetService("TweenService")
-		local ReplicatedStorage = game:GetService("ReplicatedStorage")
-		local tweenInfo = TweenInfo.new(
-			1,
-			Enum.EasingStyle.Linear,
-			Enum.EasingDirection.Out
-		)
+        _G.AutoGetAllItem = Value
+        local hasRun = false
+        local TweenService = game:GetService("TweenService")
 
-		while _G.AutoGetAllItem do
-			if game.Players.LocalPlayer.Character.inMatch.Value == true then
-				ReplicatedStorage.Events.BusJumping:FireServer()
-				repeat task.wait() until game.Players.LocalPlayer.PlayerGui:FindFirstChild("JumpPrompt")
-				if game.Players.LocalPlayer.PlayerGui:FindFirstChild("JumpPrompt") then
-					game.Players.LocalPlayer.PlayerGui.JumpPrompt:Destroy()
-				end
+        while _G.AutoGetAllItem do
+            if game.Players.LocalPlayer.Character.inMatch.Value == true and not hasRun then
+                game:GetService("Workspace").Map.Originoffice:Destroy()
+                game:GetService("ReplicatedStorage").Events.BusJumping:FireServer()
+                
+                repeat task.wait() until game.Players.LocalPlayer.PlayerGui:FindFirstChild("JumpPrompt")
+                game.Players.LocalPlayer.PlayerGui.JumpPrompt:Destroy()
+                
+                game:GetService("ReplicatedStorage").Events.GliderUnequipped:FireServer()
 
-				ReplicatedStorage.Events.GliderUnequipped:FireServer()
-				
-				game:GetService("Workspace").Map.Originoffice:Destroy()
-				
-				for i, v in ipairs(game.Workspace.Items:GetChildren()) do
-					if v.ClassName == "Tool" and v:FindFirstChild("Handle") then
-						local character = game.Players.LocalPlayer.Character
-						local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-						
-						if rootPart and v.Handle then
-							local destinationCFrame = v.Handle.CFrame * CFrame.new(0, 5, 0)
-							local tween = TweenService:Create(rootPart, tweenInfo, {CFrame = destinationCFrame})
-							tween:Play()
-							
-							tween.Completed:Wait()
-							
-							task.wait(0.3)
-							
-							character.Humanoid:EquipTool(v)
-							character.Humanoid:UnequipTools()
-						end
-					end
-				end
-			end
-			task.wait()
-		end
+                task.wait(2)
+                
+                hasRun = true
+            end
+            
+            if game.Players.LocalPlayer.Character.inMatch.Value == true then
+                local character = game.Players.LocalPlayer.Character
+                local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+                
+                if humanoidRootPart then
+                    for i, v in ipairs(game.Workspace.Items:GetChildren()) do
+                        if v.ClassName == "Tool" and v:FindFirstChild("Handle") then
+                            local targetCFrame = CFrame.new(v.Handle.Position.X, v.Handle.Position.Y + 2, v.Handle.Position.Z)
+                            local tween = TweenService:Create(humanoidRootPart, TweenInfo.new(0.3), {CFrame = targetCFrame})
+                            
+                            tween:Play()
+                            tween.Completed:Wait()
+                            
+                            game.Players.LocalPlayer.Character.Humanoid:EquipTool(v)
+                            game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
+                            
+                            task.wait(0.3)
+                        end
+                    end
+                end
+            end
+            
+            task.wait()
+        end
 	end    
 })
 
