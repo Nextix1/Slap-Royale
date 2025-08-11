@@ -262,7 +262,7 @@ Combat:AddButton({
 })
 
 Combat:AddToggle({
-	Name = "Auto Get All Items [Open The Bunker from The Misc Tab Before The Game Starts.]",
+	Name = "Auto Get All Items [Open The Bunker from The Misc Tab.]",
 	Default = false,
 	Callback = function(Value)
 		_G.AutoGetAllItem = Value
@@ -286,7 +286,7 @@ Combat:AddToggle({
 				for i, v in ipairs(game.Workspace.Items:GetChildren()) do
 					if v.ClassName == "Tool" and v:FindFirstChild("Handle") then
 						local tweenInfo = TweenInfo.new(
-							0.4,
+							1,
 							Enum.EasingStyle.Sine,
 							Enum.EasingDirection.InOut,
 							0,
@@ -306,7 +306,7 @@ Combat:AddToggle({
 						}
 						ItemEvent:FireServer(unpack(args))
 
-						task.wait(1)
+						task.wait()
 					end
 				end
 			end
