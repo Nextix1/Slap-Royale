@@ -262,13 +262,12 @@ Combat:AddButton({
 })
 
 Combat:AddToggle({
-	Name = "Auto Get All Items [Open The Bunker from The Misc Tab.]",
+	Name = "Auto Get All Items [Open The Bunker from Misc Tab.]",
 	Default = false,
 	Callback = function(Value)
 		_G.AutoGetAllItem = Value
 		
 		local ReplicatedStorage = game:GetService("ReplicatedStorage")
-		local ItemEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("Item")
 		local BusJumpingEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("BusJumping")
 		local TweenService = game:GetService("TweenService")
 		
@@ -281,12 +280,13 @@ Combat:AddToggle({
 		while _G.AutoGetAllItem do
 			if started and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("inMatch") and game.Players.LocalPlayer.Character.inMatch.Value == true then
 				local character = game.Players.LocalPlayer.Character
+				local humanoid = character:FindFirstChild("Humanoid")
 				local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
 				
 				for i, v in ipairs(game.Workspace.Items:GetChildren()) do
 					if v.ClassName == "Tool" and v:FindFirstChild("Handle") then
 						local tweenInfo = TweenInfo.new(
-							1,
+							0.7,
 							Enum.EasingStyle.Sine,
 							Enum.EasingDirection.InOut,
 							0,
@@ -300,13 +300,12 @@ Combat:AddToggle({
 						
 						local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
 						tween:Play()
+					  task.wait(0.9)
+					  
 						
-						local args = {
-							v.Handle
-						}
-						ItemEvent:FireServer(unpack(args))
-
-						task.wait(1)
+						humanoid:EquipTool(v)
+						humanoid:UnequipTools()
+					  
 					end
 				end
 			end
