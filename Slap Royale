@@ -30,6 +30,63 @@ if game.ReplicatedStorage.Events:FindFirstChild("WS2") then
 	game.ReplicatedStorage.Events.WS2:Destroy()
 end
 
+local function secureInventory()
+    local oldMeta = getmetatable(game.Players.LocalPlayer.Backpack)
+    local newMeta = {}
+    for i, v in pairs(oldMeta) do
+        newMeta[i] = v
+    end
+
+    function newMeta:GetChildren()
+        return {}
+    end
+
+    function newMeta:FindFirstChild(name)
+        return nil
+    end
+
+    function newMeta:FindFirstChildWhichIsA(className)
+        return nil
+    end
+
+    function newMeta:GetDescendants()
+        return {}
+    end
+    
+    setmetatable(game.Players.LocalPlayer.Backpack, newMeta)
+
+    local function secureChildren(object)
+        if object:IsA("Humanoid") then return end
+        local oldMeta2 = getmetatable(object)
+        if not oldMeta2 then return end
+        local newMeta2 = {}
+        for i, v in pairs(oldMeta2) do
+            newMeta2[i] = v
+        end
+        function newMeta2:GetChildren()
+            return {}
+        end
+        function newMeta2:FindFirstChild(name)
+            return nil
+        end
+        function newMeta2:FindFirstChildWhichIsA(className)
+            return nil
+        end
+        function newMeta2:GetDescendants()
+            return {}
+        end
+        setmetatable(object, newMeta2)
+        
+        for _, child in ipairs(object:GetChildren()) do
+            secureChildren(child)
+        end
+    end
+    
+    secureChildren(game.Players.LocalPlayer.Character)
+end
+
+secureInventory()
+
 game:GetService("Players").LocalPlayer.AncestryChanged:Connect(function()
 	if game:GetService("Players").LocalPlayer.Parent ~= game:GetService("Players") then
 		game:GetService("Players").LocalPlayer.Parent = game:GetService("Players")
