@@ -254,25 +254,60 @@ game.Players.LocalPlayer.PlayerGui.JumpPrompt:Destroy()
 	end    
 })
 
+Combat:AddButton({
+	Name = "Disable Glider",
+	Callback = function()
+      		game:GetService("ReplicatedStorage").Events.GliderUnequipped:FireServer()
+  	end    
+})
+
 Combat:AddToggle({
 	Name = "Auto Get All Items",
 	Default = false,
 	Callback = function(Value)
-_G.AutoGetAllItem = Value
-while _G.AutoGetAllItem do
-if game.Players.LocalPlayer.Character.inMatch.Value == true then
-            for i, v in ipairs(game.Workspace.Items:GetChildren()) do
-                if v.ClassName == "Tool" and v:FindFirstChild("Handle") then
-                    v.Handle.Anchored = false
-                    v.Handle.CFrame = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame
-                    task.wait(30)
-                    game.Players.LocalPlayer.Character.Humanoid:EquipTool(v)
-                    game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
-                end
-            end
-end
-task.wait()
-end
+		_G.AutoGetAllItem = Value
+		local TweenService = game:GetService("TweenService")
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local tweenInfo = TweenInfo.new(
+			1,
+			Enum.EasingStyle.Linear,
+			Enum.EasingDirection.Out
+		)
+
+		while _G.AutoGetAllItem do
+			if game.Players.LocalPlayer.Character.inMatch.Value == true then
+				ReplicatedStorage.Events.BusJumping:FireServer()
+				repeat task.wait() until game.Players.LocalPlayer.PlayerGui:FindFirstChild("JumpPrompt")
+				if game.Players.LocalPlayer.PlayerGui:FindFirstChild("JumpPrompt") then
+					game.Players.LocalPlayer.PlayerGui.JumpPrompt:Destroy()
+				end
+
+				ReplicatedStorage.Events.GliderUnequipped:FireServer()
+				
+				game:GetService("Workspace").Map.Originoffice:Destroy()
+				
+				for i, v in ipairs(game.Workspace.Items:GetChildren()) do
+					if v.ClassName == "Tool" and v:FindFirstChild("Handle") then
+						local character = game.Players.LocalPlayer.Character
+						local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+						
+						if rootPart and v.Handle then
+							local destinationCFrame = v.Handle.CFrame * CFrame.new(0, 5, 0)
+							local tween = TweenService:Create(rootPart, tweenInfo, {CFrame = destinationCFrame})
+							tween:Play()
+							
+							tween.Completed:Wait()
+							
+							task.wait(0.3)
+							
+							character.Humanoid:EquipTool(v)
+							character.Humanoid:UnequipTools()
+						end
+					end
+				end
+			end
+			task.wait()
+		end
 	end    
 })
 
@@ -288,22 +323,6 @@ for i, v in ipairs(game.Players.LocalPlayer.Character:GetChildren()) do
                 end
             end
 task.wait()
-end
-	end    
-})
-
-Combat:AddButton({
-	Name = "Bomb Bus",
-	Callback = function()
-if game.Players.LocalPlayer.Character:WaitForChild("inMatch").Value == true then
-for i, v in ipairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
-            if v.Name == "Bomb" then
-                game.Players.LocalPlayer.Character.Humanoid:EquipTool(v)
-                v:Activate()
-            end
-        end
-else
-OrionLib:MakeNotification({Name = "Error", Content = "You must be inside the bus.",Image = "rbxassetid://7733658504",Time = 5})
 end
 	end    
 })
@@ -416,6 +435,13 @@ Misc:AddButton({
 		end
 		fireclickdetector(workspace.Map.OriginOffice.Door.Keypad.Buttons.Enter.ClickDetector)
 	end
+})
+
+Misc:AddButton({
+	Name = "Destroy The Bunker [Items Remain]",
+	Callback = function()
+      		game:GetService("Workspace").Map.Originoffice:Destroy()
+  	end    
 })
 
 Misc:AddToggle({
