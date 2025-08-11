@@ -286,7 +286,7 @@ Combat:AddToggle({
 				for i, v in ipairs(game.Workspace.Items:GetChildren()) do
 					if v.ClassName == "Tool" and v:FindFirstChild("Handle") then
 						local tweenInfo = TweenInfo.new(
-							0.7,
+							1.5,
 							Enum.EasingStyle.Sine,
 							Enum.EasingDirection.InOut,
 							0,
@@ -300,12 +300,10 @@ Combat:AddToggle({
 						
 						local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
 						tween:Play()
-					  task.wait(0.9)
+					  task.wait(1.5)
 					  
-						
-						humanoid:EquipTool(v)
-						humanoid:UnequipTools()
-					  
+						humanoid:EquipTool(child)
+					    
 					end
 				end
 			end
