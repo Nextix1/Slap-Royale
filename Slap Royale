@@ -293,7 +293,7 @@ Combat:AddToggle({
 						if v:IsA("Tool") and v:FindFirstChild("Handle") then
 							local tweenInfo = TweenInfo.new(
 								0.5,
-								Enum.EasingStyle.Side,
+								Enum.EasingStyle.Sine,
 								Enum.EasingDirection.InOut,
 								0,
 								false,
