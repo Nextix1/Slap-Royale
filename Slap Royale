@@ -90,6 +90,12 @@ for i,v in pairs(workspace.Map:WaitForChild("CodeBrick").SurfaceGui:GetChildren(
 end
 
 local User = game.Players.LocalPlayer
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
 local Combat = Window:MakeTab({
 	Name = "Combat",
@@ -109,7 +115,7 @@ local Misc = Window:MakeTab({
 	PremiumOnly = false
 })
 
-local Player = Window:MakeTab({
+local Plyr = Window:MakeTab({
 	Name = "Player",
 	Icon = "http://www.roblox.com/asset/?id=4335489011",
 	PremiumOnly = false
@@ -246,7 +252,7 @@ end
 })
 
 Combat:AddButton({
-	Name = "Leave Bus Early [Ban Chance]",
+	Name = "Leave Bus Early",
 	Callback = function()
 game:GetService("ReplicatedStorage").Events.BusJumping:FireServer()
 repeat task.wait() until game.Players.LocalPlayer.PlayerGui:FindFirstChild("JumpPrompt")
@@ -266,21 +272,19 @@ local Section = Combat:AddSection({
 })
 
 Combat:AddButton({
-    Name = "Pick Up All Items [Read Above!!!]",
+    Name = "Teleport & Pick Up All Items [Read Above!!!]",
     Callback = function()
-      local VirtualInputManager = game:GetService("VirtualInputManager")
-      local Players = game:GetService("Players")
-      local player = Players.LocalPlayer
-      local character = player.Character or player.CharacterAdded:Wait()
-      local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-      local workspaceItems = game.Workspace:GetChildren()
-        
-        for _, item in ipairs(workspaceItems) do
-            if item:IsA("Tool") then
-                humanoidRootPart.CFrame = item.CFrame
+        for i, v in ipairs(game.Workspace.Items:GetChildren()) do
+            if v:IsA("Tool") and v:FindFirstChild("Handle") then
+                local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+                local goal = {CFrame = v.CFrame}
+                local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+                tween:Play()
+                tween.Completed:Wait()
+
                 VirtualInputManager:SendKeyEvent(Enum.KeyCode.E, true)
                 VirtualInputManager:SendKeyEvent(Enum.KeyCode.E, false)
-                task.wait(1)
+                task.wait(0.2)
             end
         end
     end    
@@ -355,6 +359,40 @@ Protection:AddToggle({
 })
 
 Protection:AddToggle({
+	Name = "Anti Record",
+	Default = false,
+	Callback = function(Value)
+AntiRecord = Value
+	end    
+})
+for i,p in pairs(game.Players:GetChildren()) do
+if p ~= game.Players.LocalPlayer then
+p.Chatted:Connect(function(message)
+Words = message:split(" ")
+if AntiRecord == true then
+for i, v in pairs(Words) do
+if v:lower():match("recording") or v:lower():match(" rec") or v:lower():match("record") or v:lower():match("discor") or v:lower():match(" disco") or v:lower():match(" disc") or v:lower():match("ticket") or v:lower():match("tickets") or v:lower():match(" ds") or v:lower():match(" dc") or v:lower():match("dizzy") or v:lower():match("dizzycord") or v:lower():match(" clip") or v:lower():match("proof") or v:lower():match("evidence") then
+game.Players.LocalPlayer:Kick("Possible player recording detected.".." [ "..p.Name.." ]".." [ "..message.." ]")
+end
+end
+end
+end)
+end
+end
+game.Players.PlayerAdded:Connect(function(Player)
+Player.Chatted:Connect(function(message)
+Words = message:split(" ")
+if AntiRecord == true then
+for i, v in pairs(Words) do
+if v:lower():match("recording") or v:lower():match(" rec") or v:lower():match("record") or v:lower():match("discor") or v:lower():match(" disco") or v:lower():match(" disc") or v:lower():match("ticket") or v:lower():match("tickets") or v:lower():match(" ds") or v:lower():match(" dc") or v:lower():match("dizzy") or v:lower():match("dizzycord") or v:lower():match(" clip") or v:lower():match("proof") or v:lower():match("evidence") then
+game.Players.LocalPlayer:Kick("Possible player recording detected.".." [ "..Player.Name.." ]".." [ "..message.." ]")
+end
+end
+end
+end)
+end)
+
+Protection:AddToggle({
 	Name = "Anti Ragdoll",
 	Default = false,
 	Callback = function(Value)
@@ -368,6 +406,37 @@ game.Players.LocalPlayer.Character.Torso.Anchored = false
 end
 end
 task.wait()
+end
+	end    
+})
+
+Misc:AddDropdown({
+	Name = "Remove",
+	Default = "",
+	Options = {"Lava", "Storm VFX", "Acid", "The Bunker [Items Remain]"},
+	Callback = function(Value)
+if Value == "Lava" then
+for _, v in ipairs(game:GetService("Workspace"):GetDescendants()) do
+    if v.Name == "Lava" then
+        v:Destroy()
+    end
+end
+elseif Value == "Storm VFX" then
+for _, v in ipairs(game:GetService("ReplicatedStorage"):GetDescendants()) do
+    if v.Name == "ZoneEffects" then
+        v:Destroy()
+    end
+end
+elseif Value == "Acid" then
+for _, v in ipairs(game:GetService("Workspace"):GetDescendants()) do
+    if v.Name == "Acid" then
+        v:Destroy()
+    end
+end
+elseif Value == "The Bunker [Items Remain]" then
+       game:GetService("Workspace").Map.Originoffice:Destroy()
+    end
+end
 end
 	end    
 })
@@ -396,11 +465,68 @@ Misc:AddButton({
 	end
 })
 
+local Section = Misc:AddSection({
+	Name = "Emotes:groove, headless, helicopter, kick, l, laugh, parker, spasm, thriller"
+})
+
 Misc:AddButton({
-	Name = "Destroy The Bunker [Items Remain]",
+	Name = "Free Gamepass Emotes [/e NameOfTheEmote]",
 	Callback = function()
-      		game:GetService("Workspace").Map.Originoffice:Destroy()
-  	end    
+Floss = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Floss, game.Players.LocalPlayer.Character.Humanoid)
+Groove = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Groove, game.Players.LocalPlayer.Character.Humanoid)
+Headless = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Headless, game.Players.LocalPlayer.Character.Humanoid)
+Helicopter = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Helicopter, game.Players.LocalPlayer.Character.Humanoid)
+Kick = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Kick, game.Players.LocalPlayer.Character.Humanoid)
+L = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.L, game.Players.LocalPlayer.Character.Humanoid)
+Laugh = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Laugh, game.Players.LocalPlayer.Character.Humanoid)
+Parker = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Parker, game.Players.LocalPlayer.Character.Humanoid)
+Spasm = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Spasm, game.Players.LocalPlayer.Character.Humanoid)
+Thriller = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Thriller, game.Players.LocalPlayer.Character.Humanoid)
+game.Players.LocalPlayer.Chatted:connect(function(msg)
+if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+Floss = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Floss, game.Players.LocalPlayer.Character.Humanoid)
+Groove = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Groove, game.Players.LocalPlayer.Character.Humanoid)
+Headless = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Headless, game.Players.LocalPlayer.Character.Humanoid)
+Helicopter = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Helicopter, game.Players.LocalPlayer.Character.Humanoid)
+Kick = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Kick, game.Players.LocalPlayer.Character.Humanoid)
+L = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.L, game.Players.LocalPlayer.Character.Humanoid)
+Laugh = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Laugh, game.Players.LocalPlayer.Character.Humanoid)
+Parker = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Parker, game.Players.LocalPlayer.Character.Humanoid)
+Spasm = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Spasm, game.Players.LocalPlayer.Character.Humanoid)
+Thriller = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(game.ReplicatedStorage.AnimationPack.Thriller, game.Players.LocalPlayer.Character.Humanoid)
+if string.lower(msg) == "/e floss" then
+Floss:Play()
+elseif string.lower(msg) == "/e groove" then
+Groove:Play()
+elseif string.lower(msg) == "/e headless" then
+Headless:Play()
+elseif string.lower(msg) == "/e helicopter" then
+Helicopter:Play()
+elseif string.lower(msg) == "/e kick" then
+Kick:Play()
+elseif string.lower(msg) == "/e l" then
+L:Play()
+elseif string.lower(msg) == "/e laugh" then
+Laugh:Play()
+elseif string.lower(msg) == "/e parker" then
+Parker:Play()
+elseif string.lower(msg) == "/e spasm" then
+Spasm:Play()
+elseif string.lower(msg) == "/e thriller" then
+Thriller:Play()
+end
+EP = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+end
+end)
+game:GetService("RunService").Heartbeat:Connect(function()
+if EP ~= nil and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and Floss.IsPlaying or Groove.IsPlaying or Headless.IsPlaying or Helicopter.IsPlaying or Kick.IsPlaying or L.IsPlaying or Laugh.IsPlaying or Parker.IsPlaying or Spasm.IsPlaying or Thriller.IsPlaying then
+Magnitude = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - EP).Magnitude
+if Magnitude > 1 then
+Floss:Stop(); Groove:Stop(); Headless:Stop(); Helicopter:Stop(); Kick:Stop(); L:Stop(); Laugh:Stop(); Parker:Stop(); Spasm:Stop(); Thriller:Stop()
+end
+end
+end)
+    end    
 })
 
 Misc:AddToggle({
@@ -475,7 +601,7 @@ Misc:AddToggle({
 	end    
 })
 
-Player:AddTextbox({
+Plyr:AddTextbox({
 	Name = "Fly Speed",
 	Default = "",
 	TextDisappear = false,
@@ -484,7 +610,7 @@ _G.SetSpeedFly = Value
 	end	  
 })
 
-Player:AddToggle({
+Plyr:AddToggle({
 	Name = "Fly",
 	Default = false,
 	Callback = function(Value)
@@ -540,7 +666,7 @@ end
 	end    
 })
 
-Player:AddSlider({
+Plyr:AddSlider({
 	Name = "Walkspeed",
 	Min = 20,
 	Max = 1000,
@@ -554,7 +680,7 @@ Walkspeed = Value
 	end    
 })
 
-Player:AddToggle({
+Plyr:AddToggle({
 	Name = "Keep Walkspeed",
 	Default = false,
 	Callback = function(Value)
@@ -568,7 +694,7 @@ task.wait()
 	end    
 })
 
-Player:AddSlider({
+Plyr:AddSlider({
 	Name = "Jumppower",
 	Min = 50,
 	Max = 1000,
@@ -582,7 +708,7 @@ Jumppower = Value
 	end    
 })
 
-Player:AddToggle({
+Plyr:AddToggle({
 	Name = "Keep Jumppower",
 	Default = false,
 	Callback = function(Value)
