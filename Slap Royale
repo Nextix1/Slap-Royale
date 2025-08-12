@@ -261,6 +261,31 @@ Combat:AddButton({
   	end    
 })
 
+local Section = Combat:AddSection({
+	Name = "Open The Bunker from Misc Tab and Leave The Bus before using."
+})
+
+Combat:AddButton({
+    Name = "Pick Up All Items [Read Above!!!]",
+    Callback = function()
+      local VirtualInputManager = game:GetService("VirtualInputManager")
+      local Players = game:GetService("Players")
+      local player = Players.LocalPlayer
+      local character = player.Character or player.CharacterAdded:Wait()
+      local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+      local workspaceItems = game.Workspace:GetChildren()
+        
+        for _, item in ipairs(workspaceItems) do
+            if item:IsA("Tool") then
+                humanoidRootPart.CFrame = item.CFrame
+                VirtualInputManager:SendKeyEvent(Enum.KeyCode.E, true)
+                VirtualInputManager:SendKeyEvent(Enum.KeyCode.E, false)
+                task.wait(1)
+            end
+        end
+    end    
+})
+
 Protection:AddToggle({
 	Name = "Anti Acid",
 	Default = false,
