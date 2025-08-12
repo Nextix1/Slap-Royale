@@ -261,7 +261,7 @@ Combat:AddButton({
   	end    
 })
 
-Conbat:AddToggle({
+Combat:AddToggle({
     Name = "Auto Get All Items [Open The Bunker from Misc Tab.]",
     Default = false,
     Callback = function(Value)
