@@ -261,64 +261,6 @@ Combat:AddButton({
   	end    
 })
 
-Combat:AddToggle({
-    Name = "Auto Get All Items [Open The Bunker from Misc Tab.]",
-    Default = false,
-    Callback = function(Value)
-        _G.AutoGetAllItem = Value
-        
-        local ReplicatedStorage = game:GetService("ReplicatedStorage")
-        local TweenService = game:GetService("TweenService")
-        local Players = game:GetService("Players")
-        local LocalPlayer = Players.LocalPlayer
-        
-        local BusJumpEvent = ReplicatedStorage.Events:FindFirstChild("BusJumping")
-        local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-
-        if BusJumpEvent then
-            BusJumpEvent.OnClientEvent:Connect(function()
-                if _G.AutoGetAllItem and LocalPlayer.Character then
-                    local humanoidRootPart = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                    local inMatchValue = LocalPlayer.Character:FindFirstChild("inMatch")
-
-                    if not humanoidRootPart or not inMatchValue or inMatchValue.Value ~= true then
-                        return
-                    end
-
-                    for _, item in ipairs(game.Workspace.Items:GetChildren()) do
-                        if item:IsA("Tool") and item:FindFirstChild("Handle") then
-                            local goal = {CFrame = CFrame.new(item.Handle.Position)}
-                            local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
-                            tween:Play()
-                            tween.Completed:Wait()
-
-                            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.E, false, LocalPlayer) -- TuÅŸa basma
-                            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, LocalPlayer) -- TuÅŸu bÄ±rakma
-                            task.wait(0.2)
-                        end
-                    end
-                end
-            end)
-        end
-    end
-})
-
-Combat:AddToggle({
-	Name = "Auto Use Items",
-	Default = false,
-	Callback = function(Value)
-_G.AutoUseItem = Value
-while _G.AutoUseItem do
-for i, v in ipairs(game.Players.LocalPlayer.Character:GetChildren()) do
-                 if v.ClassName == "Tool" and v:FindFirstChild("Handle") then
-                    v:Activate()
-                end
-            end
-task.wait()
-end
-	end    
-})
-
 Protection:AddToggle({
 	Name = "Anti Acid",
 	Default = false,
