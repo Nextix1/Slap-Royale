@@ -90,12 +90,6 @@ for i,v in pairs(workspace.Map:WaitForChild("CodeBrick").SurfaceGui:GetChildren(
 end
 
 local User = game.Players.LocalPlayer
-local VirtualInputManager = game:GetService("VirtualInputManager")
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
 local Combat = Window:MakeTab({
 	Name = "Combat",
@@ -274,6 +268,14 @@ local Section = Combat:AddSection({
 Combat:AddButton({
     Name = "Teleport & Pick Up All Items [Read Above!!!]",
     Callback = function()
+
+    local VirtualInputManager = game:GetService("VirtualInputManager")
+    local Players = game:GetService("Players")
+    local TweenService = game:GetService("TweenService")
+    local player = Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
         for i, v in ipairs(game.Workspace.Items:GetChildren()) do
             if v:IsA("Tool") and v:FindFirstChild("Handle") then
                 local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
