@@ -261,44 +261,57 @@ Combat:AddButton({
   	end    
 })
 
-Combat:AddToggle({
-	Name = "Auto Get All Items [Open The Bunker from Misc Tab.]",
-	Default = false,
-	Callback = function(Value)
-		_G.AutoGetAllItem = Value
-		
-		local started = false
-		local VirtualInputManager = game:GetService("VirtualInputManager")
-		local TweenService = game:GetService("TweenService")
-		local LocalPlayer = game.Players.LocalPlayer
-		
-		game:GetService("ReplicatedStorage").Events.BusJumping.OnClientEvent:Connect(function()
-			started = true
-		end)
-		
-		while true do
-			if started and _G.AutoGetAllItem and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("inMatch") and LocalPlayer.Character.inMatch.Value == true then
-				for _, v in ipairs(game.Workspace.Items:GetChildren()) do
-					if v.ClassName == "Tool" and v:FindFirstChild("Handle") then
-						local humanoidRootPart = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-						if humanoidRootPart then
-							local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-							local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = v.Handle.CFrame * CFrame.new(0, 0, 3)})
-							
-							tween:Play()
-							tween.Completed:Wait()
-							
-							VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.E, false, LocalPlayer)
-							VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, LocalPlayer)
-							
-							task.wait(0.3)
-						end
-					end
-				end
-			end
-			task.wait()
-		end
-	end    
+Conbat:AddToggle({
+    Name = "Auto Get All Items [Open The Bunker from Misc Tab.]",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoGetAllItem = Value
+        local UserInputService = game:GetService("UserInputService")
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local TweenService = game:GetService("TweenService")
+        local Players = game:GetService("Players")
+        local LocalPlayer = Players.LocalPlayer
+        local RunService = game:GetService("RunService")
+        local BusJumpEvent = ReplicatedStorage.Events:FindFirstChild("BusJumping")
+
+        local function tweenTeleport(part, position)
+            local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+            local goal = {CFrame = CFrame.new(position)}
+            local tween = TweenService:Create(part, tweenInfo, goal)
+            tween:Play()
+            tween.Completed:Wait()
+        end
+
+        local function pressE()
+            UserInputService:SimulateKeyPress(Enum.KeyCode.E)
+            task.wait(0.1) -- TuÅŸa basma simÃ¼lasyonu arasÄ±nda kÃ¼Ã§Ã¼k bir bekleme
+        end
+
+        local function checkAndGetItems()
+            if not _G.AutoGetAllItem or not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                return
+            end
+
+            local humanoidRootPart = LocalPlayer.Character.HumanoidRootPart
+            local items = game.Workspace.Items:GetChildren()
+
+            for _, item in ipairs(items) do
+                if item:IsA("Tool") and item:FindFirstChild("Handle") then
+                    local itemPosition = item.Handle.Position
+                    tweenTeleport(humanoidRootPart, itemPosition)
+                    pressE()
+                end
+            end
+        end
+
+        if BusJumpEvent then
+            BusJumpEvent.OnClientEvent:Connect(function()
+                if _G.AutoGetAllItem then
+                    task.spawn(checkAndGetItems)
+                end
+            end)
+        end
+    end
 })
 
 Combat:AddToggle({
