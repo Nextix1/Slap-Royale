@@ -268,49 +268,60 @@ Combat:AddToggle({
 		_G.AutoGetAllItem = Value
 		
 		local ReplicatedStorage = game:GetService("ReplicatedStorage")
-		local BusJumpingEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("BusJumping")
+		local Events = ReplicatedStorage:WaitForChild("Events")
+		local BusJumpingEvent = Events:WaitForChild("BusJumping")
+		local ItemEvent = Events:WaitForChild("Item")
+		local Players = game:GetService("Players")
 		local TweenService = game:GetService("TweenService")
-		
+		local LocalPlayer = Players.LocalPlayer
+
 		local started = false
-		
-		BusJumpingEvent.OnClientEvent:Connect(function()
+		local function onBusJump()
 			started = true
-		end)
+		end
+
+		local connection = BusJumpingEvent.OnClientEvent:Connect(onBusJump)
 
 		while _G.AutoGetAllItem do
-			if started and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("inMatch") and game.Players.LocalPlayer.Character.inMatch.Value == true then
-				local character = game.Players.LocalPlayer.Character
+			local character = LocalPlayer.Character
+			
+			if started and character and character:FindFirstChild("inMatch") and character.inMatch.Value == true then
 				local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
 				
-				for i, v in ipairs(game.Workspace.Items:GetChildren()) do
-					if v.ClassName == "Tool" and v:FindFirstChild("Handle") then
-						local tweenInfo = TweenInfo.new(
-							1,
-							Enum.EasingStyle.Sine,
-							Enum.EasingDirection.InOut,
-							0,
-							false,
-							0
-						)
-						
-						local goal = {
-							CFrame = v.Handle.CFrame
-						}
-						
-						local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
-						tween:Play()
-					  task.wait(1)
-						
-						local args = {
-							game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild(v.Name):WaitForChild("Handle")
-						}
-						game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Item"):FireServer(unpack(args))
-					  
+				if humanoidRootPart then
+					for i, v in ipairs(game.Workspace.Items:GetChildren()) do
+						if v:IsA("Tool") and v:FindFirstChild("Handle") then
+							local tweenInfo = TweenInfo.new(
+								0.5,
+								Enum.EasingStyle.Side,
+								Enum.EasingDirection.InOut,
+								0,
+								false,
+								0
+							)
+							
+							local goal = {
+								CFrame = v.Handle.CFrame
+							}
+							
+							local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+							tween:Play()
+							tween.Completed:Wait()
+							
+							local args = {
+								LocalPlayer.Backpack:WaitForChild(v.Name):WaitForChild("Handle")
+							}
+							ItemEvent:FireServer(unpack(args))
+							
+							task.wait(0.5)
+						end
 					end
 				end
 			end
 			task.wait()
 		end
+		
+		connection:Disconnect()
 	end    
 })
 
