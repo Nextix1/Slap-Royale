@@ -266,48 +266,37 @@ Combat:AddToggle({
     Default = false,
     Callback = function(Value)
         _G.AutoGetAllItem = Value
-        local UserInputService = game:GetService("UserInputService")
+        
         local ReplicatedStorage = game:GetService("ReplicatedStorage")
         local TweenService = game:GetService("TweenService")
         local Players = game:GetService("Players")
         local LocalPlayer = Players.LocalPlayer
-        local RunService = game:GetService("RunService")
+        
         local BusJumpEvent = ReplicatedStorage.Events:FindFirstChild("BusJumping")
-
-        local function tweenTeleport(part, position)
-            local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-            local goal = {CFrame = CFrame.new(position)}
-            local tween = TweenService:Create(part, tweenInfo, goal)
-            tween:Play()
-            tween.Completed:Wait()
-        end
-
-        local function pressE()
-            UserInputService:SimulateKeyPress(Enum.KeyCode.E)
-            task.wait(0.1) -- TuÅŸa basma simÃ¼lasyonu arasÄ±nda kÃ¼Ã§Ã¼k bir bekleme
-        end
-
-        local function checkAndGetItems()
-            if not _G.AutoGetAllItem or not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                return
-            end
-
-            local humanoidRootPart = LocalPlayer.Character.HumanoidRootPart
-            local items = game.Workspace.Items:GetChildren()
-
-            for _, item in ipairs(items) do
-                if item:IsA("Tool") and item:FindFirstChild("Handle") then
-                    local itemPosition = item.Handle.Position
-                    tweenTeleport(humanoidRootPart, itemPosition)
-                    pressE()
-                end
-            end
-        end
+        local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
 
         if BusJumpEvent then
             BusJumpEvent.OnClientEvent:Connect(function()
-                if _G.AutoGetAllItem then
-                    task.spawn(checkAndGetItems)
+                if _G.AutoGetAllItem and LocalPlayer.Character then
+                    local humanoidRootPart = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                    local inMatchValue = LocalPlayer.Character:FindFirstChild("inMatch")
+
+                    if not humanoidRootPart or not inMatchValue or inMatchValue.Value ~= true then
+                        return
+                    end
+
+                    for _, item in ipairs(game.Workspace.Items:GetChildren()) do
+                        if item:IsA("Tool") and item:FindFirstChild("Handle") then
+                            local goal = {CFrame = CFrame.new(item.Handle.Position)}
+                            local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+                            tween:Play()
+                            tween.Completed:Wait()
+
+                            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.E, false, LocalPlayer) -- TuÅŸa basma
+                            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, LocalPlayer) -- TuÅŸu bÄ±rakma
+                            task.wait(0.2)
+                        end
+                    end
                 end
             end)
         end
