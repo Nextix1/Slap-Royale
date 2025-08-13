@@ -269,23 +269,25 @@ Combat:AddButton({
     Name = "Teleport & Pick Up All Items [Read Above!!!]",
     Callback = function()
 
-    local VirtualInputManager = game:GetService("VirtualInputManager")
-    local Players = game:GetService("Players")
-    local TweenService = game:GetService("TweenService")
-    local player = Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        if game:GetService("Players").LocalPlayer.Character == nil then
+            game:GetService("Players").LocalPlayer.CharacterAdded:Wait()
+        end
+
+        humanoidRootPart = game:GetService("Players").LocalPlayer.Character:WaitForChild("HumanoidRootPart")
 
         for i, v in ipairs(game.Workspace.Items:GetChildren()) do
             if v:IsA("Tool") and v:FindFirstChild("Handle") then
-                local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-                local goal = {CFrame = v.CFrame}
-                local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+                tween = game:GetService("TweenService"):Create(
+                    humanoidRootPart,
+                    TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+                    {CFrame = v.CFrame}
+                )
                 tween:Play()
                 tween.Completed:Wait()
 
-                VirtualInputManager:SendKeyEvent(Enum.KeyCode.E, true)
-                VirtualInputManager:SendKeyEvent(Enum.KeyCode.E, false)
+                game:GetService("VirtualInputManager"):SendKeyEvent(Enum.KeyCode.E, true)
+                game:GetService("VirtualInputManager"):SendKeyEvent(Enum.KeyCode.E, false)
+
                 task.wait(0.2)
             end
         end
