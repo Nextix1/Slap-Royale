@@ -1,8 +1,4 @@
-if not game:IsLoaded() then
-	game.Loaded:Wait()
-end
-
-local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Guy-that-exists/1-Line-Scripts/refs/heads/main/Mobile%20Friendly%20Orion"))()
+local OrionLib = loadstring(game:HttpGet(("https://raw.githubusercontent.com/Guy-that-exists/1-Line-Scripts/refs/heads/main/Mobile%20Friendly%20Orion")))()
 local Window = OrionLib:MakeWindow({Name = "Slap Royale", IntroEnabled = false, SaveConfig = false, ConfigFolder = "SR"})
 
 
@@ -107,7 +103,7 @@ local Misc = Window:MakeTab({
 	PremiumOnly = false
 })
 
-local Plyr = Window:MakeTab({
+local Player = Window:MakeTab({
 	Name = "Player",
 	Icon = "http://www.roblox.com/asset/?id=4335489011",
 	PremiumOnly = false
@@ -271,11 +267,11 @@ Combat:AddButton({
             game:GetService("Players").LocalPlayer.CharacterAdded:Wait()
         end
 
-        humanoidRootPart = game:GetService("Players").LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+      local  humanoidRootPart = game:GetService("Players").LocalPlayer.Character:WaitForChild("HumanoidRootPart")
 
         for i, v in ipairs(game.Workspace.Items:GetChildren()) do
             if v:IsA("Tool") and v:FindFirstChild("Handle") then
-                tween = game:GetService("TweenService"):Create(
+               local tween = game:GetService("TweenService"):Create(
                     humanoidRootPart,
                     TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
                     {CFrame = v.CFrame}
@@ -286,7 +282,7 @@ Combat:AddButton({
                 game:GetService("VirtualInputManager"):SendKeyEvent(Enum.KeyCode.E, true)
                 game:GetService("VirtualInputManager"):SendKeyEvent(Enum.KeyCode.E, false)
 
-                task.wait(0.2)
+                task.wait()
             end
         end
     end    
@@ -393,6 +389,8 @@ end
 end
 end)
 end)
+   end
+})
 
 Protection:AddToggle({
 	Name = "Anti Ragdoll",
@@ -603,7 +601,7 @@ Misc:AddToggle({
 	end    
 })
 
-Plyr:AddTextbox({
+Player:AddTextbox({
 	Name = "Fly Speed",
 	Default = "",
 	TextDisappear = false,
@@ -612,7 +610,7 @@ _G.SetSpeedFly = Value
 	end	  
 })
 
-Plyr:AddToggle({
+Player:AddToggle({
 	Name = "Fly",
 	Default = false,
 	Callback = function(Value)
@@ -668,7 +666,7 @@ end
 	end    
 })
 
-Plyr:AddSlider({
+Player:AddSlider({
 	Name = "Walkspeed",
 	Min = 20,
 	Max = 1000,
@@ -682,7 +680,7 @@ Walkspeed = Value
 	end    
 })
 
-Plyr:AddToggle({
+Player:AddToggle({
 	Name = "Keep Walkspeed",
 	Default = false,
 	Callback = function(Value)
@@ -696,7 +694,7 @@ task.wait()
 	end    
 })
 
-Plyr:AddSlider({
+Player:AddSlider({
 	Name = "Jumppower",
 	Min = 50,
 	Max = 1000,
@@ -710,7 +708,7 @@ Jumppower = Value
 	end    
 })
 
-Plyr:AddToggle({
+Player:AddToggle({
 	Name = "Keep Jumppower",
 	Default = false,
 	Callback = function(Value)
@@ -723,3 +721,5 @@ task.wait()
             end
 	end    
 })
+
+OrionLib:Init()
