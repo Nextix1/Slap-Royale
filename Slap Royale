@@ -441,7 +441,6 @@ elseif Value == "The Bunker [Items Remain]" then
        game:GetService("Workspace").Map.Originoffice:Destroy()
     end
 end
-end
 	end    
 })
 
