@@ -4,7 +4,7 @@ end
 
 game:GetService("GuiService"):ClearError()
 
-local OrionLib = loadstring(game:HttpGet(("https://raw.githubusercontent.com/Guy-that-exists/1-Line-Scripts/refs/heads/main/Mobile%20Friendly%20Orion")))()
+local OrionLib = loadstring(game:HttpGet(("https://raw.githubusercontent.com/Guy-that-exists/1-Line-Scripts/refs/heads/main/Mobile%20Friendly%20Orion"))()
 local Window = OrionLib:MakeWindow({Name = "Slap Royale", IntroEnabled = false, SaveConfig = false, ConfigFolder = "SR"})
 
 
